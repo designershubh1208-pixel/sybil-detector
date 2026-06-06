@@ -1,0 +1,274 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Better Auth & User Management
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  emailVerified Boolean  @default(false)
+  image         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessions   Session[]
+  accounts   Account[]
+  apiKeys    ApiKey[]
+  workspaces WorkspaceMember[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  userId                String
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Workspaces and Subscriptions
+model Workspace {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscription Subscription?
+  members      WorkspaceMember[]
+  analyses     Analysis[]
+  apiKeys      ApiKey[]
+  alerts       Alert[]
+  investigations Investigation[]
+}
+
+model WorkspaceMember {
+  id          String   @id @default(cuid())
+  workspaceId String
+  userId      String
+  role        String   @default("MEMBER") // ADMIN, MEMBER
+  createdAt   DateTime @default(now())
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceId, userId])
+}
+
+model Subscription {
+  id                   String    @id @default(cuid())
+  workspaceId          String    @unique
+  stripeCustomerId     String?
+  stripeSubscriptionId String?
+  plan                 String    @default("FREE") // FREE, PRO, ENTERPRISE
+  status               String    @default("ACTIVE") // ACTIVE, CANCELED, PAST_DUE
+  currentPeriodEnd     DateTime?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+model ApiKey {
+  id          String    @id @default(cuid())
+  key         String    @unique
+  name        String
+  userId      String
+  workspaceId String
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workspace Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+// Core Domain: Sybil Analysis
+model Analysis {
+  id           String   @id @default(cuid())
+  workspaceId  String
+  name         String
+  status       String   @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED
+  progress     Int      @default(0)
+  totalWallets Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  workspace Workspace        @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  wallets   WalletAnalysis[]
+  clusters  Cluster[]
+  reports   Report[]
+}
+
+model Wallet {
+  address   String    @id
+  firstTxAt DateTime?
+  lastTxAt  DateTime?
+  txCount   Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  analyses     WalletAnalysis[]
+  transactions Transaction[]
+  trustScores  TrustScore[]
+  entities     EntityWallet[]
+}
+
+model WalletAnalysis {
+  id         String   @id @default(cuid())
+  analysisId String
+  address    String
+  features   Json? // Extracted features: funding source, interaction frequency, etc.
+  riskScore  Int? // 0-100
+  clusterId  String?
+  createdAt  DateTime @default(now())
+
+  analysis    Analysis   @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  wallet      Wallet     @relation(fields: [address], references: [address], onDelete: Cascade)
+  cluster     Cluster?   @relation(fields: [clusterId], references: [id], onDelete: SetNull)
+  scoreDetail RiskScore?
+
+  @@unique([analysisId, address])
+}
+
+model Transaction {
+  id           String   @id
+  address      String
+  hash         String
+  to           String?
+  value        String?
+  timestamp    DateTime
+  contractCall Boolean  @default(false)
+  methodId     String?
+
+  wallet Wallet @relation(fields: [address], references: [address], onDelete: Cascade)
+
+  @@index([address, timestamp])
+}
+
+model Cluster {
+  id         String   @id @default(cuid())
+  analysisId String
+  name       String?
+  size       Int      @default(0)
+  confidence Float? // DBSCAN / Clustering confidence metric
+  aiSummary  String? // Generated by OpenAI
+  createdAt  DateTime @default(now())
+
+  analysis Analysis         @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+  wallets  WalletAnalysis[]
+  investigations Investigation[]
+}
+
+model RiskScore {
+  id               String  @id @default(cuid())
+  walletAnalysisId String  @unique
+  score            Int // 0-100
+  fundingSim       Float // Similarity scores breakdown
+  contractSim      Float
+  timingSim        Float
+  behaviorSim      Float
+  networkSim       Float
+  explanation      String? // Generated AI explanation
+
+  walletAnalysis WalletAnalysis @relation(fields: [walletAnalysisId], references: [id], onDelete: Cascade)
+}
+
+model Report {
+  id         String   @id @default(cuid())
+  analysisId String
+  format     String // PDF, CSV, JSON
+  url        String // URL to stored file (S3 / local)
+  createdAt  DateTime @default(now())
+
+  analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+}
+
+model TrustScore {
+  id                  String   @id @default(cuid())
+  walletAddress       String
+  score               Int      // 0-100
+  humanProbability    Int
+  sybilRisk           Int
+  governanceRisk      Int
+  explainabilityText  String   @db.Text
+  createdAt           DateTime @default(now())
+  
+  wallet              Wallet   @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
+}
+
+// Enterprise Phase 2: Entity Resolution & Live Monitoring
+model Entity {
+  id          String   @id @default(cuid())
+  confidence  Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  wallets     EntityWallet[]
+}
+
+model EntityWallet {
+  entityId      String
+  walletAddress String
+
+  entity        Entity   @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  wallet        Wallet   @relation(fields: [walletAddress], references: [address], onDelete: Cascade)
+
+  @@id([entityId, walletAddress])
+}
+
+model Alert {
+  id          String   @id @default(cuid())
+  workspaceId String
+  title       String
+  message     String
+  type        String   // e.g., "FUNDING_ANOMALY", "NEW_CLUSTER"
+  isRead      Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+}
+
+// Enterprise Phase 3: Investigation Workspace
+model Investigation {
+  id          String   @id @default(cuid())
+  workspaceId String
+  title       String
+  notes       String?  @db.Text
+  tags        String[] // Array of tags
+  clusterId   String?  // Reference to a specific Sybil cluster
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  cluster     Cluster?  @relation(fields: [clusterId], references: [id], onDelete: SetNull)
+}
