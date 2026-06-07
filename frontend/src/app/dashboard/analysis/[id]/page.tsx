@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Users, AlertTriangle, ShieldCheck, Download } from "lucide-react";
 import Link from "next/link";
-import axios from "axios";
+import axios from "@/lib/axios";
 import ClusterGraph from "@/components/ClusterGraph";
 import Loader from "@/components/Loader";
 

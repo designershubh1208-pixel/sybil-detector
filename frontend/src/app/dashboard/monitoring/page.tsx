@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Activity, Bell, CheckCircle, ShieldAlert } from "lucide-react";
-import axios from "axios";
+import axios from "@/lib/axios";
 
 export default function MonitoringPage() {
   const [alerts, setAlerts] = useState<any[]>([]);

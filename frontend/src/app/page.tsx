@@ -6,8 +6,27 @@ import { Shader, ChromaFlow, FilmGrain, FlutedGlass, Swirl } from 'shaders/react
 import { Clock, Menu, X, ArrowRight, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import Loader from '@/components/Loader';
+import { useAuth } from '@/context/AuthContext';
+import { signInWithPopup, signOut } from 'firebase/auth';
+import { auth, googleProvider } from '@/lib/firebase';
 
-const HoverButton = ({ text, className, iconCircleClass, iconClass, href = "#" }: { text: string, className: string, iconCircleClass: string, iconClass: string, href?: string }) => {
+const HoverButton = ({ text, className, iconCircleClass, iconClass, href = "#", onClick }: { text: string, className: string, iconCircleClass: string, iconClass: string, href?: string, onClick?: () => void }) => {
+  if (onClick) {
+    return (
+      <button onClick={onClick} className={`group flex items-center gap-3 transition-colors duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${className}`}>
+        <span className="relative flex-col overflow-hidden h-[20px] flex">
+          <span className="flex flex-col transform group-hover:-translate-y-1/2 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
+            <span className="h-[20px] flex items-center">{text}</span>
+            <span className="h-[20px] flex items-center">{text}</span>
+          </span>
+        </span>
+        <div className={`flex items-center justify-center rounded-full transition-colors duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${iconCircleClass}`}>
+          <ArrowRight className={`transform group-hover:-rotate-45 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${iconClass}`} />
+        </div>
+      </button>
+    );
+  }
+
   return (
     <Link href={href} className={`group flex items-center gap-3 transition-colors duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${className}`}>
       <span className="relative flex-col overflow-hidden h-[20px] flex">
@@ -27,6 +46,23 @@ export default function LandingPage() {
   const [time, setTime] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const { user, loading } = useAuth();
+
+  const handleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error("Error signing in", error);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out", error);
+    }
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 1200);
@@ -100,13 +136,29 @@ export default function LandingPage() {
                 <Clock className="w-[14px] h-[14px] text-gray-600" />
                 <span className="text-[13px] text-gray-600">{time} in India</span>
               </div>
-              <HoverButton 
-                text="Sign In" 
-                href="/login"
-                className="bg-gray-900 text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2"
-                iconCircleClass="w-6 h-6 bg-white text-gray-900"
-                iconClass="w-3.5 h-3.5"
-              />
+              {!loading && user ? (
+                <div className="flex items-center gap-4">
+                  <span className="text-[13px] font-medium text-gray-900">{user.displayName}</span>
+                  <HoverButton 
+                    text="Dashboard" 
+                    href="/dashboard"
+                    className="bg-gray-900 text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2"
+                    iconCircleClass="w-6 h-6 bg-white text-gray-900"
+                    iconClass="w-3.5 h-3.5"
+                  />
+                  <button onClick={handleSignOut} className="text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <HoverButton 
+                  text="Sign In" 
+                  onClick={handleSignIn}
+                  className="bg-gray-900 text-white text-[13px] font-medium rounded-full pl-5 pr-2 py-2"
+                  iconCircleClass="w-6 h-6 bg-white text-gray-900"
+                  iconClass="w-3.5 h-3.5"
+                />
+              )}
             </div>
 
             <button 
@@ -138,13 +190,29 @@ export default function LandingPage() {
                 </Link>
               ))}
             </div>
-            <HoverButton 
-              text="Sign In" 
-              href="/login"
-              className="bg-[#F26522] hover:bg-[#e05a1a] text-white text-[15px] font-medium rounded-full pl-6 pr-2 py-3 w-full justify-between"
-              iconCircleClass="w-10 h-10 bg-white text-[#F26522]"
-              iconClass="w-5 h-5"
-            />
+            {!loading && user ? (
+              <div className="flex flex-col gap-4">
+                <span className="text-[15px] font-medium text-gray-900">Signed in as: {user.displayName}</span>
+                <HoverButton 
+                  text="Dashboard" 
+                  href="/dashboard"
+                  className="bg-[#F26522] hover:bg-[#e05a1a] text-white text-[15px] font-medium rounded-full pl-6 pr-2 py-3 w-full justify-between"
+                  iconCircleClass="w-10 h-10 bg-white text-[#F26522]"
+                  iconClass="w-5 h-5"
+                />
+                <button onClick={handleSignOut} className="text-left text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors mt-2">
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <HoverButton 
+                text="Sign In" 
+                onClick={handleSignIn}
+                className="bg-[#F26522] hover:bg-[#e05a1a] text-white text-[15px] font-medium rounded-full pl-6 pr-2 py-3 w-full justify-between"
+                iconCircleClass="w-10 h-10 bg-white text-[#F26522]"
+                iconClass="w-5 h-5"
+              />
+            )}
           </div>
         </div>
 

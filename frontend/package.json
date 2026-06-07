@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "dotenv -e ../backend/.env -- next dev -p 3000",
+    "build": "dotenv -e ../backend/.env -- next build",
     "start": "next start",
     "lint": "eslint"
   },
@@ -16,6 +16,8 @@
     "axios": "^1.17.0",
     "better-auth": "^1.6.14",
     "clsx": "^2.1.1",
+    "dotenv-cli": "^11.0.0",
+    "firebase": "^12.14.0",
     "framer-motion": "^12.40.0",
     "gsap": "^3.15.0",
     "lucide-react": "^1.17.0",

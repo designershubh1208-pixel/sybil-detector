@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import { UploadCloud, File as FileIcon, AlertCircle, Play } from "lucide-react";
 import { motion } from "framer-motion";
-import axios from "axios";
+import axios from "@/lib/axios";
 import { useRouter } from "next/navigation";
 
 export default function UploadPage() {

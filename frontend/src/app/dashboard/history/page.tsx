@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Clock, Activity, CheckCircle2, AlertCircle } from "lucide-react";
-import axios from "axios";
+import axios from "@/lib/axios";
 
 export default function HistoryPage() {
   const [analyses, setAnalyses] = useState<any[]>([]);

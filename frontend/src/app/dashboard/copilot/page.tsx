@@ -2,15 +2,36 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Send, Bot, User, Sparkles } from "lucide-react";
-import axios from "axios";
+import axios from "@/lib/axios";
+import { auth } from "@/lib/firebase";
 
 export default function CopilotPage() {
-  const [messages, setMessages] = useState<{role: "user" | "bot", text: string}[]>([
+  const defaultMessages: {role: "user" | "bot", text: string}[] = [
     { role: "bot", text: "Hello! I am the Beacon AI Copilot. I have full access to your workspace's global metrics, active Sybil clusters, and live alerts. How can I assist your investigation today?" }
-  ]);
+  ];
+
+  const [messages, setMessages] = useState<{role: "user" | "bot", text: string}[]>(defaultMessages);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("copilot_messages");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.length > 0) {
+          setMessages(parsed);
+        }
+      } catch (e) {
+        console.error("Failed to parse saved messages", e);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("copilot_messages", JSON.stringify(messages));
+  }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,9 +52,19 @@ export default function CopilotPage() {
     try {
       // Stub workspace for Phase 3
       const workspaceId = "workspace-1";
+      
+      let token = "";
+      if (auth.currentUser) {
+        token = await auth.currentUser.getIdToken();
+      }
+
       const res = await axios.post("http://localhost:3001/api/copilot/chat", {
         prompt: userQuery,
         workspaceId
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       });
 
       setMessages(prev => [...prev, { role: "bot", text: res.data.reply }]);

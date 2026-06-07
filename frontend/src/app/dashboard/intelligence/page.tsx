@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Search, FolderKanban, Plus, Tag } from "lucide-react";
-import axios from "axios";
+import axios from "@/lib/axios";
 
 export default function IntelligencePage() {
   const [investigations, setInvestigations] = useState<any[]>([]);
