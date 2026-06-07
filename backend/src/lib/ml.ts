@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+// @ts-ignore
 import { kmeans } from "ml-kmeans";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
@@ -51,7 +52,7 @@ export async function fetchWalletTransactions(address: string): Promise<Transact
  */
 export function extractFeatures(address: string, txs: Transaction[]): WalletFeatureVector {
   if (txs.length === 0) {
-    return { address, txCount: 0, avgTimeBetweenTxs: 0, uniqueContracts: 0, avgGasUsed: 0 };
+    return { address, txCount: 0, avgTimeBetweenTxs: 0, uniqueContracts: 0, avgGasUsed: 0, governanceInteractions: 0 };
   }
 
   const txCount = txs.length;
@@ -59,8 +60,8 @@ export function extractFeatures(address: string, txs: Transaction[]): WalletFeat
   // Calculate average time between sequential transactions
   let totalTimeDiff = 0;
   for (let i = 0; i < txs.length - 1; i++) {
-    const t1 = parseInt(txs[i].timeStamp);
-    const t2 = parseInt(txs[i + 1].timeStamp);
+    const t1 = parseInt(txs[i]!.timeStamp);
+    const t2 = parseInt(txs[i + 1]!.timeStamp);
     totalTimeDiff += Math.abs(t1 - t2);
   }
   const avgTimeBetweenTxs = txCount > 1 ? totalTimeDiff / (txCount - 1) : 0;
@@ -109,8 +110,8 @@ export function clusterWallets(features: WalletFeatureVector[]) {
   // Group addresses by their assigned cluster ID
   const clusters = new Map<number, string[]>();
   
-  result.clusters.forEach((clusterId, index) => {
-    const addr = features[index].address;
+  result.clusters.forEach((clusterId: number, index: number) => {
+    const addr = features[index]!.address;
     if (!clusters.has(clusterId)) {
       clusters.set(clusterId, []);
     }

@@ -8,7 +8,7 @@ const redisConnection = new IORedis(process.env.REDIS_URL || "redis://localhost:
 });
 
 export const analysisQueue = new Queue("sybil-analysis", {
-  connection: redisConnection,
+  connection: redisConnection as any,
 });
 
 // Worker to process analysis jobs
@@ -52,10 +52,10 @@ export const analysisWorker = new Worker(
       for (const clusterWalletAddrs of sybilClusters) {
         clusterWalletAddrs.forEach(addr => clusteredWallets.add(addr));
         // Compute averages for the LLM
-        const clusterFeatures = featureVectors.filter(f => clusterWalletAddrs.includes(f.address));
-        const avgTxCount = clusterFeatures.reduce((acc, f) => acc + f.txCount, 0) / clusterFeatures.length;
-        const avgTime = clusterFeatures.reduce((acc, f) => acc + f.avgTimeBetweenTxs, 0) / clusterFeatures.length;
-        const avgContracts = clusterFeatures.reduce((acc, f) => acc + f.uniqueContracts, 0) / clusterFeatures.length;
+        const clusterFeatures = featureVectors.filter((f: any) => clusterWalletAddrs.includes(f.address));
+        const avgTxCount = clusterFeatures.reduce((acc: number, f: any) => acc + f.txCount, 0) / clusterFeatures.length;
+        const avgTime = clusterFeatures.reduce((acc: number, f: any) => acc + f.avgTimeBetweenTxs, 0) / clusterFeatures.length;
+        const avgContracts = clusterFeatures.reduce((acc: number, f: any) => acc + f.uniqueContracts, 0) / clusterFeatures.length;
         
         const summary = await generateClusterSummary(clusterWalletAddrs, {
           txCount: avgTxCount,
@@ -141,7 +141,7 @@ export const analysisWorker = new Worker(
     }
   },
   {
-    connection: redisConnection,
+    connection: redisConnection as any,
   }
 );
 
