@@ -52,7 +52,7 @@ export default function UploadPage() {
 
     try {
       // Simulate API call to backend
-      const res = await axios.post("http://localhost:3001/api/analysis/upload", {
+      const res = await axios.post("/analysis/upload", {
         workspaceId: "workspace-1", // stub
         name: method === "csv" && csvFile ? csvFile.name : "Manual Upload Analysis",
         wallets

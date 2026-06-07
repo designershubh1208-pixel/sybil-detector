@@ -17,7 +17,7 @@ export default function AnalysisReportPage() {
   useEffect(() => {
     async function fetchAnalysis() {
       try {
-        const res = await axios.get(`http://localhost:3001/api/analysis/${id}`);
+        const res = await axios.get(`/analysis/${id}`);
         setAnalysis(res.data);
       } catch (error) {
         console.error("Error fetching analysis details", error);

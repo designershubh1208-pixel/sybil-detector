@@ -58,7 +58,7 @@ export default function CopilotPage() {
         token = await auth.currentUser.getIdToken();
       }
 
-      const res = await axios.post("http://localhost:3001/api/copilot/chat", {
+      const res = await axios.post("/copilot/chat", {
         prompt: userQuery,
         workspaceId
       }, {

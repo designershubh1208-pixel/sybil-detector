@@ -33,7 +33,7 @@ export default function MonitoringPage() {
 
   const markAsRead = async (alertId: string) => {
     try {
-      await axios.post(`http://localhost:3001/api/alerts/${alertId}/read`);
+      await axios.post(`/alerts/${alertId}/read`);
       setAlerts(alerts.map(a => a.id === alertId ? { ...a, isRead: true } : a));
     } catch (error) {
       console.error("Error marking alert as read", error);

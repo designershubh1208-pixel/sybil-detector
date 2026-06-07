@@ -22,7 +22,7 @@ const initialNodes = [
   { id: '5', position: { x: 150, y: 200 }, data: { label: 'Contract Interaction' }, type: 'output' },
 ];
 
-const initialEdges = [
+const initialEdges: Edge[] = [
   { id: 'e1-2', source: '1', target: '2', label: 'Funded (0.1 ETH)', animated: true },
   { id: 'e1-3', source: '1', target: '3', label: 'Funded (0.1 ETH)', animated: true },
   { id: 'e2-4', source: '2', target: '4', label: 'Sync Call' },

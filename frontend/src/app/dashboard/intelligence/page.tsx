@@ -12,7 +12,7 @@ export default function IntelligencePage() {
     async function fetchInvestigations() {
       try {
         const workspaceId = "workspace-1"; // Stub
-        const res = await axios.get(`http://localhost:3001/api/investigations/${workspaceId}`);
+        const res = await axios.get(`/investigations/${workspaceId}`);
         setInvestigations(res.data);
       } catch (error) {
         console.error("Error fetching investigations", error);

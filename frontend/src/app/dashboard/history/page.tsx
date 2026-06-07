@@ -12,7 +12,7 @@ export default function HistoryPage() {
   useEffect(() => {
     async function fetchAnalyses() {
       try {
-        const res = await axios.get("http://localhost:3001/api/analysis?workspaceId=workspace-1");
+        const res = await axios.get("/analysis?workspaceId=workspace-1");
         setAnalyses(res.data);
       } catch (error) {
         console.error("Error fetching analyses", error);
