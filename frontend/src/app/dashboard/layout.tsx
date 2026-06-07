@@ -6,10 +6,19 @@ import { LayoutDashboard, Upload, History, Users, Settings, LogOut, Activity, Sp
 import { cn } from "@/lib/utils";
 import { signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect } from "react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/");
+    }
+  }, [user, loading, router]);
 
   const handleSignOut = async () => {
     try {
@@ -30,6 +39,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     { name: "Team", href: "/dashboard/team", icon: Users },
     { name: "Settings", href: "/dashboard/settings", icon: Settings },
   ];
+
+  if (loading || !user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-[var(--background)]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-8 h-8 rounded-full border-4 border-[var(--border)] border-t-[var(--accent)] animate-spin"></div>
+          <p className="text-[var(--secondary)] font-medium">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-[var(--background)]">
