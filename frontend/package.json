@@ -6,20 +6,18 @@
     "dev": "dotenv -e ../backend/.env -- next dev -p 3000",
     "build": "dotenv -e ../backend/.env -- next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
-    "@tanstack/react-query": "^5.101.0",
     "@xyflow/react": "^12.11.0",
     "axios": "^1.17.0",
-    "better-auth": "^1.6.14",
     "clsx": "^2.1.1",
     "dotenv-cli": "^11.0.0",
     "firebase": "^12.14.0",
     "framer-motion": "^12.40.0",
-    "gsap": "^3.15.0",
     "lucide-react": "^1.17.0",
     "next": "16.2.7",
     "react": "19.2.4",
@@ -27,8 +25,7 @@
     "recharts": "^3.8.1",
     "shaders": "^2.5.129",
     "tailwind-merge": "^3.6.0",
-    "three": "^0.184.0",
-    "zustand": "^5.0.14"
+    "three": "^0.184.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
