@@ -40,19 +40,18 @@ enterpriseRouter.post("/wallet/check", async (req, res) => {
   }
 
   try {
-    const results = [];
-
-    for (const address of wallets) {
-      // 1. Fetch transactions
-      const txs = await fetchWalletTransactions(address);
+    const results = await Promise.all(wallets.map(async (address: string) => {
+      const [txs, walletRecord] = await Promise.all([
+        fetchWalletTransactions(address),
+        prisma.walletAnalysis.findFirst({
+          where: { address, clusterId: { not: null } },
+        })
+      ]);
       
       // 2. Extract features
-      const features = await extractFeatures(address, txs);
+      const features = extractFeatures(address, txs);
 
       // 3. Check if wallet belongs to any known Sybil cluster historically
-      const walletRecord = await prisma.walletAnalysis.findFirst({
-        where: { address, clusterId: { not: null } },
-      });
       const isClustered = !!walletRecord;
 
       // 4. Calculate Trust Score
@@ -78,15 +77,15 @@ enterpriseRouter.post("/wallet/check", async (req, res) => {
       });
 
       // 6. Format Response
-      results.push({
+      return {
         address,
         trustScore: trustScoreResult.score,
         sybilRisk: trustScoreResult.sybilRisk,
         humanProbability: trustScoreResult.humanProbability,
         recommendation: trustScoreResult.score >= 50 ? "APPROVE" : "REJECT",
         explanation: trustScoreResult.explainabilityText,
-      });
-    }
+      };
+    }));
 
     res.json({ results });
   } catch (error) {

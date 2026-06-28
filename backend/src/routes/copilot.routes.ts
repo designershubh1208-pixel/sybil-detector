@@ -23,29 +23,27 @@ copilotRouter.post("/chat", async (req, res) => {
   try {
     // 1. Gather Global Context
     // We fetch high-level metrics to feed into Gemini so it understands the global state.
-    const totalAnalyses = await prisma.analysis.count({ where: { workspaceId } });
-    const totalClusters = await prisma.cluster.count({ where: { analysis: { workspaceId } } });
-    
-    // Get the most recent high-risk clusters
-    const topClusters = await prisma.cluster.findMany({
-      where: { analysis: { workspaceId } },
-      orderBy: { size: 'desc' },
-      take: 3,
-      select: {
-        id: true,
-        size: true,
-        confidence: true,
-        aiSummary: true
-      }
-    });
-
-    // Get the latest 3 alerts
-    const recentAlerts = await prisma.alert.findMany({
-      where: { workspaceId },
-      orderBy: { createdAt: 'desc' },
-      take: 3,
-      select: { title: true, message: true, type: true }
-    });
+    const [totalAnalyses, totalClusters, topClusters, recentAlerts] = await Promise.all([
+      prisma.analysis.count({ where: { workspaceId } }),
+      prisma.cluster.count({ where: { analysis: { workspaceId } } }),
+      prisma.cluster.findMany({
+        where: { analysis: { workspaceId } },
+        orderBy: { size: 'desc' },
+        take: 3,
+        select: {
+          id: true,
+          size: true,
+          confidence: true,
+          aiSummary: true
+        }
+      }),
+      prisma.alert.findMany({
+        where: { workspaceId },
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+        select: { title: true, message: true, type: true }
+      })
+    ]);
 
     // 2. Build the System Context Prompt
     const contextStr = `

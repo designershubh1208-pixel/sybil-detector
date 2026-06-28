@@ -32,13 +32,13 @@ analysisRouter.post("/upload", async (req, res) => {
     // We can insert wallets in bulk if needed, or queue the job and let the worker handle it.
     // Let's create the WalletAnalysis stub entries:
     // Ensure wallets exist
-    for (const address of wallets) {
+    await Promise.all(wallets.map(async (address: string) => {
       await prisma.wallet.upsert({
         where: { address },
         update: {},
         create: { address },
       });
-    }
+    }));
 
     await prisma.walletAnalysis.createMany({
       data: wallets.map((address) => ({
