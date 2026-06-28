@@ -29,7 +29,8 @@ export interface WalletFeatureVector {
  */
 export async function fetchWalletTransactions(address: string): Promise<Transaction[]> {
   try {
-    const apiKey = process.env.ETHERSCAN_API_KEY || "YourApiKeyToken";
+    const apiKey = process.env.ETHERSCAN_API_KEY;
+    if (!apiKey) throw new Error("ETHERSCAN_API_KEY is missing");
     const url = `https://api.etherscan.io/v2/api?chainid=1&module=account&action=txlist&address=${address}&startblock=0&endblock=99999999&page=1&offset=50&sort=desc&apikey=${apiKey}`;
     
     const response = await fetch(url);
@@ -236,9 +237,11 @@ function generateSyntheticTransactions(address: string): Transaction[] {
   // Generate 10-30 txs
   const numTxs = 10 + Math.floor(Math.random() * 20);
   
+  const isSybilAddress = address.includes("sybil");
+  
   for (let i = 0; i < numTxs; i++) {
     // Some wallets are "sybil-like" (very short intervals), some are normal (hours/days)
-    const isSybil = address.includes("sybil") || Math.random() > 0.5;
+    const isSybil = isSybilAddress || Math.random() > 0.5;
     const timeOffset = isSybil ? Math.floor(Math.random() * 300) : Math.floor(Math.random() * 86400);
     
     txs.push({

@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "npx prisma generate && tsc",
     "dev": "tsx watch src/server.ts",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "doctor": "npx react-doctor@latest"
   },
   "keywords": [],
   "author": "",

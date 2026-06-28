@@ -51,8 +51,9 @@ export const analysisWorker = new Worker(
       
       for (const clusterWalletAddrs of sybilClusters) {
         clusterWalletAddrs.forEach(addr => clusteredWallets.add(addr));
+        const clusterSet = new Set(clusterWalletAddrs);
         // Compute averages for the LLM
-        const clusterFeatures = featureVectors.filter((f: any) => clusterWalletAddrs.includes(f.address));
+        const clusterFeatures = featureVectors.filter((f: any) => clusterSet.has(f.address));
         const avgTxCount = clusterFeatures.reduce((acc: number, f: any) => acc + f.txCount, 0) / clusterFeatures.length;
         const avgTime = clusterFeatures.reduce((acc: number, f: any) => acc + f.avgTimeBetweenTxs, 0) / clusterFeatures.length;
         const avgContracts = clusterFeatures.reduce((acc: number, f: any) => acc + f.uniqueContracts, 0) / clusterFeatures.length;
