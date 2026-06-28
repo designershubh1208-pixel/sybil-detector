@@ -10,27 +10,26 @@ const DEFAULT_MESSAGES: {role: "user" | "bot", text: string}[] = [
 ];
 
 export default function CopilotPage() {
-  const [messages, setMessages] = useState<{role: "user" | "bot", text: string}[]>(DEFAULT_MESSAGES);
+  const [messages, setMessages] = useState<{role: "user" | "bot", text: string}[]>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("copilot_messages:v1");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.length > 0) return parsed;
+        } catch (e) {
+          console.error("Failed to parse saved messages", e);
+        }
+      }
+    }
+    return DEFAULT_MESSAGES;
+  });
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem("copilot_messages");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        if (parsed && parsed.length > 0) {
-          setMessages(parsed);
-        }
-      } catch (e) {
-        console.error("Failed to parse saved messages", e);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("copilot_messages", JSON.stringify(messages));
+    localStorage.setItem("copilot_messages:v1", JSON.stringify(messages));
   }, [messages]);
 
   const scrollToBottom = () => {
@@ -93,7 +92,7 @@ export default function CopilotPage() {
       {/* Chat Box */}
       <div className="flex-1 bg-white rounded-2xl border border-[var(--border)] shadow-sm flex flex-col overflow-hidden">
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div suppressHydrationWarning className="flex-1 overflow-y-auto p-6 space-y-6">
           {messages.map((msg, i) => (
             <div key={i} className={`flex gap-4 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
               <div className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 ${msg.role === 'user' ? 'bg-[var(--accent)] text-white' : 'bg-[#EFEFEF] text-[var(--primary)]'}`}>

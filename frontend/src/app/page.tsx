@@ -43,7 +43,16 @@ const HoverButton = ({ text, className, iconCircleClass, iconClass, href = "#", 
 };
 
 export default function LandingPage() {
-  const [time, setTime] = useState('');
+  const [time, setTime] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    const formatter = new Intl.DateTimeFormat('en-GB', {
+      timeZone: 'Asia/Kolkata',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    });
+    return formatter.format(new Date());
+  });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const { user, loading } = useAuth();
@@ -70,7 +79,7 @@ export default function LandingPage() {
   }, []);
 
   useEffect(() => {
-    const updateClock = () => {
+    const interval = setInterval(() => {
       const formatter = new Intl.DateTimeFormat('en-GB', {
         timeZone: 'Asia/Kolkata',
         hour: '2-digit',
@@ -78,9 +87,7 @@ export default function LandingPage() {
         hour12: false
       });
       setTime(formatter.format(new Date()));
-    };
-    updateClock();
-    const interval = setInterval(updateClock, 1000);
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -134,7 +141,7 @@ export default function LandingPage() {
               <span className="text-[13px] text-gray-600 hidden lg:block">Securing Web3 protocols</span>
               <div className="flex items-center gap-1.5 px-2">
                 <Clock className="w-[14px] h-[14px] text-gray-600" />
-                <span className="text-[13px] text-gray-600">{time} in India</span>
+                <span suppressHydrationWarning className="text-[13px] text-gray-600">{time} in India</span>
               </div>
               {!loading && user ? (
                 <div className="flex items-center gap-4">
@@ -178,7 +185,7 @@ export default function LandingPage() {
             <div className="flex justify-between items-center mb-8">
               <div className="flex items-center gap-1.5 bg-gray-100 rounded-full px-3 py-1.5">
                 <Clock className="w-[14px] h-[14px] text-gray-600" />
-                <span className="text-[13px] text-gray-600">{time} in India</span>
+                <span suppressHydrationWarning className="text-[13px] text-gray-600">{time} in India</span>
               </div>
               <button type="button" onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                 <X className="w-5 h-5 text-gray-900" />
