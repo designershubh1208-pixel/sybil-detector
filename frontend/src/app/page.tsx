@@ -13,7 +13,7 @@ import { auth, googleProvider } from '@/lib/firebase';
 const HoverButton = ({ text, className, iconCircleClass, iconClass, href = "#", onClick }: { text: string, className: string, iconCircleClass: string, iconClass: string, href?: string, onClick?: () => void }) => {
   if (onClick) {
     return (
-      <button onClick={onClick} className={`group flex items-center gap-3 transition-colors duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${className}`}>
+      <button type="button" onClick={onClick} className={`group flex items-center gap-3 transition-colors duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)] ${className}`}>
         <span className="relative flex-col overflow-hidden h-[20px] flex">
           <span className="flex flex-col transform group-hover:-translate-y-1/2 transition-transform duration-500 ease-[cubic-bezier(0.25,0.1,0.25,1)]">
             <span className="h-[20px] flex items-center">{text}</span>
@@ -146,7 +146,7 @@ export default function LandingPage() {
                     iconCircleClass="w-6 h-6 bg-white text-gray-900"
                     iconClass="w-3.5 h-3.5"
                   />
-                  <button onClick={handleSignOut} className="text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors">
+                  <button type="button" onClick={handleSignOut} className="text-[13px] font-medium text-gray-600 hover:text-gray-900 transition-colors">
                     Sign Out
                   </button>
                 </div>
@@ -162,6 +162,7 @@ export default function LandingPage() {
             </div>
 
             <button 
+              type="button"
               className="md:hidden w-9 h-9 bg-gray-900 rounded-full flex items-center justify-center text-white shrink-0 ml-auto mr-1"
               onClick={() => setMobileMenuOpen(true)}
             >
@@ -179,7 +180,7 @@ export default function LandingPage() {
                 <Clock className="w-[14px] h-[14px] text-gray-600" />
                 <span className="text-[13px] text-gray-600">{time} in India</span>
               </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+              <button type="button" onClick={() => setMobileMenuOpen(false)} className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                 <X className="w-5 h-5 text-gray-900" />
               </button>
             </div>
@@ -200,7 +201,7 @@ export default function LandingPage() {
                   iconCircleClass="w-10 h-10 bg-white text-[#F26522]"
                   iconClass="w-5 h-5"
                 />
-                <button onClick={handleSignOut} className="text-left text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors mt-2">
+                <button type="button" onClick={handleSignOut} className="text-left text-[15px] font-medium text-gray-600 hover:text-gray-900 transition-colors mt-2">
                   Sign Out
                 </button>
               </div>

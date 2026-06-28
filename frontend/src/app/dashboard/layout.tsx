@@ -9,6 +9,17 @@ import { auth } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
 
+const NAV_ITEMS = [
+  { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { name: "AI Copilot", href: "/dashboard/copilot", icon: Sparkles },
+  { name: "Intelligence", href: "/dashboard/intelligence", icon: FolderKanban },
+  { name: "Live Alerts", href: "/dashboard/monitoring", icon: Activity },
+  { name: "New Analysis", href: "/dashboard/upload", icon: Upload },
+  { name: "History", href: "/dashboard/history", icon: History },
+  { name: "Team", href: "/dashboard/team", icon: Users },
+  { name: "Settings", href: "/dashboard/settings", icon: Settings },
+];
+
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -29,16 +40,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     }
   };
 
-  const navItems = [
-    { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
-    { name: "AI Copilot", href: "/dashboard/copilot", icon: Sparkles },
-    { name: "Intelligence", href: "/dashboard/intelligence", icon: FolderKanban },
-    { name: "Live Alerts", href: "/dashboard/monitoring", icon: Activity },
-    { name: "New Analysis", href: "/dashboard/upload", icon: Upload },
-    { name: "History", href: "/dashboard/history", icon: History },
-    { name: "Team", href: "/dashboard/team", icon: Users },
-    { name: "Settings", href: "/dashboard/settings", icon: Settings },
-  ];
+  };
 
   if (loading || !user) {
     return (
@@ -60,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
+          {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             const Icon = item.icon;
             
@@ -83,7 +85,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
 
         <div className="p-4 border-t border-[var(--border)]">
-          <button onClick={handleSignOut} className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium text-[var(--secondary)] hover:bg-red-50 hover:text-red-600 transition-colors">
+          <button type="button" onClick={handleSignOut} className="flex items-center gap-3 px-4 py-3 w-full rounded-xl text-sm font-medium text-[var(--secondary)] hover:bg-red-50 hover:text-red-600 transition-colors">
             <LogOut className="w-5 h-5" />
             Sign Out
           </button>

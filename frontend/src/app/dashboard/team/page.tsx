@@ -7,7 +7,7 @@ export default function TeamPage() {
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Team Management</h1>
-        <button className="px-5 py-2.5 bg-[var(--primary)] text-white text-sm font-medium rounded-xl hover:bg-[var(--accent)] transition-colors flex items-center gap-2">
+        <button type="button" className="px-5 py-2.5 bg-[var(--primary)] text-white text-sm font-medium rounded-xl hover:bg-[var(--accent)] transition-colors flex items-center gap-2">
           <UserPlus className="w-4 h-4" />
           Invite Member
         </button>

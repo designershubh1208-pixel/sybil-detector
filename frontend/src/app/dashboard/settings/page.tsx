@@ -11,15 +11,15 @@ export default function SettingsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div className="md:col-span-1 space-y-2">
-          <button className="w-full text-left px-4 py-3 bg-[var(--background)] border border-[var(--border)] rounded-xl font-medium flex items-center gap-3">
+          <button type="button" className="w-full text-left px-4 py-3 bg-[var(--background)] border border-[var(--border)] rounded-xl font-medium flex items-center gap-3">
             <SettingsIcon className="w-5 h-5 text-[var(--secondary)]" />
             General
           </button>
-          <button className="w-full text-left px-4 py-3 hover:bg-[var(--background)] rounded-xl font-medium flex items-center gap-3 text-[var(--secondary)] hover:text-gray-900 transition-colors">
+          <button type="button" className="w-full text-left px-4 py-3 hover:bg-[var(--background)] rounded-xl font-medium flex items-center gap-3 text-[var(--secondary)] hover:text-gray-900 transition-colors">
             <CreditCard className="w-5 h-5" />
             Billing & Plans
           </button>
-          <button className="w-full text-left px-4 py-3 hover:bg-[var(--background)] rounded-xl font-medium flex items-center gap-3 text-[var(--secondary)] hover:text-gray-900 transition-colors">
+          <button type="button" className="w-full text-left px-4 py-3 hover:bg-[var(--background)] rounded-xl font-medium flex items-center gap-3 text-[var(--secondary)] hover:text-gray-900 transition-colors">
             <Key className="w-5 h-5" />
             API Keys
           </button>
@@ -46,7 +46,7 @@ export default function SettingsPage() {
                   <option>None</option>
                 </select>
               </div>
-              <button className="px-5 py-2.5 bg-[var(--primary)] text-white text-sm font-medium rounded-xl hover:bg-[var(--accent)] transition-colors mt-2">
+              <button type="button" className="px-5 py-2.5 bg-[var(--primary)] text-white text-sm font-medium rounded-xl hover:bg-[var(--accent)] transition-colors mt-2">
                 Save Changes
               </button>
             </div>

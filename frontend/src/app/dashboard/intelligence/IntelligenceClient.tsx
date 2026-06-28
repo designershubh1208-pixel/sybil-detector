@@ -3,25 +3,14 @@
 import { useEffect, useState } from "react";
 import { Search, FolderKanban, Plus, Tag } from "lucide-react";
 import axios from "@/lib/axios";
+import useSWR from "swr";
 
 export default function IntelligenceClient() {
-  const [investigations, setInvestigations] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchInvestigations() {
-      try {
-        const workspaceId = "workspace-1"; // Stub
-        const res = await axios.get(`/investigations/${workspaceId}`);
-        setInvestigations(res.data);
-      } catch (error) {
-        console.error("Error fetching investigations", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchInvestigations();
-  }, []);
+  const workspaceId = "workspace-1"; // Stub
+  const { data: investigations = [], isLoading: loading } = useSWR(
+    `/investigations/${workspaceId}`, 
+    (url) => axios.get(url).then(res => res.data)
+  );
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -36,7 +25,7 @@ export default function IntelligenceClient() {
             Your centralized command center for tracking, tagging, and saving specific forensic investigations.
           </p>
         </div>
-        <button className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--accent)] transition-colors">
+        <button type="button" className="flex items-center gap-2 px-4 py-2 bg-[var(--primary)] text-white rounded-lg text-sm font-medium hover:bg-[var(--accent)] transition-colors">
           <Plus className="w-4 h-4" />
           New Case File
         </button>
@@ -52,7 +41,7 @@ export default function IntelligenceClient() {
             className="w-full pl-10 pr-4 py-2 bg-white border border-[var(--border)] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
           />
         </div>
-        <button className="px-4 py-2 bg-white border border-[var(--border)] rounded-xl text-sm font-medium text-[var(--secondary)] hover:text-[var(--primary)] transition-colors">
+        <button type="button" className="px-4 py-2 bg-white border border-[var(--border)] rounded-xl text-sm font-medium text-[var(--secondary)] hover:text-[var(--primary)] transition-colors">
           Filter by Tag
         </button>
       </div>

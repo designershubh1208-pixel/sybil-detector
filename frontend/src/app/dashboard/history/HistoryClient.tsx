@@ -4,24 +4,13 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { Clock, Activity, CheckCircle2, AlertCircle } from "lucide-react";
 import axios from "@/lib/axios";
+import useSWR from "swr";
 
 export default function HistoryClient() {
-  const [analyses, setAnalyses] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchAnalyses() {
-      try {
-        const res = await axios.get("/analysis?workspaceId=workspace-1");
-        setAnalyses(res.data);
-      } catch (error) {
-        console.error("Error fetching analyses", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchAnalyses();
-  }, []);
+  const { data: analyses = [], isLoading: loading } = useSWR(
+    "/analysis?workspaceId=workspace-1", 
+    (url) => axios.get(url).then(res => res.data)
+  );
 
   return (
     <div className="space-y-8">

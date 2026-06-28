@@ -3,38 +3,26 @@
 import { useEffect, useState } from "react";
 import { Activity, Bell, CheckCircle, ShieldAlert } from "lucide-react";
 import axios from "@/lib/axios";
+import useSWR from "swr";
 
 export default function MonitoringClient() {
-  const [alerts, setAlerts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const activeOrg = "workspace-1";
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchWorkspaceAndAlerts() {
-      try {
-        // Stub active workspace for now
-        const activeOrg = "workspace-1";
-        
-        setWorkspaceId(activeOrg);
-        const res = await axios.get(`http://localhost:3001/api/alerts/${activeOrg}`);
-        setAlerts(res.data);
-      } catch (error) {
-        console.error("Error fetching alerts", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchWorkspaceAndAlerts();
+    setWorkspaceId(activeOrg);
+  }, [activeOrg]);
 
-    // Poll for new alerts every 10 seconds to simulate "Live Webhook" feed
-    const interval = setInterval(fetchWorkspaceAndAlerts, 10000);
-    return () => clearInterval(interval);
-  }, []);
+  const { data: alerts = [], isLoading: loading, mutate } = useSWR(
+    `http://localhost:3001/api/alerts/${activeOrg}`,
+    (url) => axios.get(url).then(res => res.data),
+    { refreshInterval: 10000 }
+  );
 
   const markAsRead = async (alertId: string) => {
     try {
       await axios.post(`/alerts/${alertId}/read`);
-      setAlerts(alerts.map(a => a.id === alertId ? { ...a, isRead: true } : a));
+      mutate(alerts.map((a: any) => a.id === alertId ? { ...a, isRead: true } : a), false);
     } catch (error) {
       console.error("Error marking alert as read", error);
     }
@@ -95,6 +83,7 @@ export default function MonitoringClient() {
                   </div>
                   {!alert.isRead && (
                     <button 
+                      type="button"
                       onClick={() => markAsRead(alert.id)}
                       className="text-xs font-medium text-red-600 hover:text-red-800 bg-red-100 px-3 py-1 rounded-full"
                     >
@@ -117,7 +106,7 @@ export default function MonitoringClient() {
             <p className="text-sm text-gray-600 mb-4">
               Configure Webhooks and Email notifications for high-priority alerts.
             </p>
-            <button className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium rounded-lg text-sm transition-colors cursor-not-allowed opacity-50">
+            <button type="button" className="w-full px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium rounded-lg text-sm transition-colors cursor-not-allowed opacity-50">
               Configure Webhooks (Coming Soon)
             </button>
           </div>

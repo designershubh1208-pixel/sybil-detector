@@ -5,12 +5,12 @@ import { Send, Bot, User, Sparkles } from "lucide-react";
 import axios from "@/lib/axios";
 import { auth } from "@/lib/firebase";
 
-export default function CopilotPage() {
-  const defaultMessages: {role: "user" | "bot", text: string}[] = [
-    { role: "bot", text: "Hello! I am the Beacon AI Copilot. I have full access to your workspace's global metrics, active Sybil clusters, and live alerts. How can I assist your investigation today?" }
-  ];
+const DEFAULT_MESSAGES: {role: "user" | "bot", text: string}[] = [
+  { role: "bot", text: "Hello! I am the Beacon AI Copilot. I have full access to your workspace's global metrics, active Sybil clusters, and live alerts. How can I assist your investigation today?" }
+];
 
-  const [messages, setMessages] = useState<{role: "user" | "bot", text: string}[]>(defaultMessages);
+export default function CopilotPage() {
+  const [messages, setMessages] = useState<{role: "user" | "bot", text: string}[]>(DEFAULT_MESSAGES);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -132,6 +132,7 @@ export default function CopilotPage() {
               disabled={isLoading}
             />
             <button
+              type="button"
               onClick={handleSend}
               disabled={isLoading || !input.trim()}
               className="absolute right-2 p-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[var(--accent)] transition-colors disabled:opacity-50"

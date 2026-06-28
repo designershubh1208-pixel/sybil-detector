@@ -75,12 +75,14 @@ export default function UploadPage() {
 
       <div className="bg-white p-2 rounded-2xl border border-[var(--border)] flex gap-2 w-max">
         <button 
+          type="button"
           onClick={() => setMethod("csv")}
           className={`px-6 py-2.5 rounded-xl text-sm font-medium transition-colors ${method === "csv" ? "bg-[var(--background)] text-[var(--primary)] shadow-sm" : "text-[var(--secondary)] hover:text-[var(--primary)]"}`}
         >
           CSV Upload
         </button>
         <button 
+          type="button"
           onClick={() => setMethod("manual")}
           className={`px-6 py-2.5 rounded-xl text-sm font-medium transition-colors ${method === "manual" ? "bg-[var(--background)] text-[var(--primary)] shadow-sm" : "text-[var(--secondary)] hover:text-[var(--primary)]"}`}
         >
@@ -107,7 +109,7 @@ export default function UploadPage() {
                 <p className="text-[var(--secondary)] mb-2 text-sm max-w-sm">
                   Parsed {csvWallets.length} valid wallet addresses.
                 </p>
-                <button className="px-6 py-3 mt-4 bg-gray-100 text-[var(--foreground)] text-sm font-medium rounded-xl hover:bg-gray-200 transition-colors" onClick={(e) => { e.stopPropagation(); setCsvFile(null); setCsvWallets([]); }}>
+                <button type="button" className="px-6 py-3 mt-4 bg-gray-100 text-[var(--foreground)] text-sm font-medium rounded-xl hover:bg-gray-200 transition-colors" onClick={(e) => { e.stopPropagation(); setCsvFile(null); setCsvWallets([]); }}>
                   Remove File
                 </button>
               </div>
@@ -120,7 +122,7 @@ export default function UploadPage() {
                 <p className="text-[var(--secondary)] mb-6 text-sm max-w-sm">
                   Upload a file containing wallet addresses. We support Ethereum, Base, Arbitrum, Optimism, and Polygon formats.
                 </p>
-                <button className="px-6 py-3 bg-[var(--primary)] text-white text-sm font-medium rounded-xl hover:bg-[var(--accent)] transition-colors">
+                <button type="button" className="px-6 py-3 bg-[var(--primary)] text-white text-sm font-medium rounded-xl hover:bg-[var(--accent)] transition-colors">
                   Browse Files
                 </button>
               </>
@@ -144,6 +146,7 @@ export default function UploadPage() {
             Max 100,000 wallets per upload on Enterprise plan.
           </div>
           <button 
+            type="button"
             onClick={handleStartAnalysis}
             disabled={isUploading || (method === "manual" && textInput.trim().length === 0) || (method === "csv" && !csvFile)}
             className="px-8 py-3 bg-[var(--primary)] text-white font-medium rounded-xl hover:bg-[var(--accent)] transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"

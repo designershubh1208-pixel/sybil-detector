@@ -5,28 +5,18 @@ import { useParams } from "next/navigation";
 import { ArrowLeft, Users, AlertTriangle, ShieldCheck, Download } from "lucide-react";
 import Link from "next/link";
 import axios from "@/lib/axios";
+import useSWR from "swr";
 import ClusterGraph from "@/components/ClusterGraph";
 import Loader from "@/components/Loader";
 
 export default function AnalysisReportClient() {
   const params = useParams();
   const id = params?.id as string;
-  const [analysis, setAnalysis] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchAnalysis() {
-      try {
-        const res = await axios.get(`/analysis/${id}`);
-        setAnalysis(res.data);
-      } catch (error) {
-        console.error("Error fetching analysis details", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    if (id) fetchAnalysis();
-  }, [id]);
+  
+  const { data: analysis, isLoading: loading } = useSWR(
+    id ? `/analysis/${id}` : null, 
+    (url) => axios.get(url).then(res => res.data)
+  );
 
   if (loading) {
     return <Loader text="Loading Report Data" />;
@@ -95,6 +85,7 @@ export default function AnalysisReportClient() {
           </p>
         </div>
         <button 
+          type="button"
           onClick={handleExportCSV}
           className="flex items-center gap-2 px-4 py-2 bg-white border border-[var(--border)] rounded-lg text-sm font-medium hover:bg-[var(--background)] transition-colors"
         >

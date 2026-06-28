@@ -6,13 +6,14 @@ import Link from "next/link";
 import { RiskDistributionChart, SybilBehaviorPieChart } from "@/components/SybilCharts";
 import { NetworkGraph } from "@/components/NetworkGraph";
 
+const STATS = [
+  { label: "Wallets Analyzed", value: "124,592", trend: "+12.5%", isPositive: true, icon: Users },
+  { label: "Sybil Clusters Found", value: "842", trend: "+5.2%", isPositive: true, icon: Network },
+  { label: "High Risk Flags", value: "3,104", trend: "-2.1%", isPositive: false, icon: ShieldAlert },
+  { label: "Detection Accuracy", value: "98.4%", trend: "+0.1%", isPositive: true, icon: Activity },
+];
+
 export default function DashboardPage() {
-  const stats = [
-    { label: "Wallets Analyzed", value: "124,592", trend: "+12.5%", isPositive: true, icon: Users },
-    { label: "Sybil Clusters Found", value: "842", trend: "+5.2%", isPositive: true, icon: Network },
-    { label: "High Risk Flags", value: "3,104", trend: "-2.1%", isPositive: false, icon: ShieldAlert },
-    { label: "Detection Accuracy", value: "98.4%", trend: "+0.1%", isPositive: true, icon: Activity },
-  ];
 
   return (
     <div className="space-y-8">
@@ -24,7 +25,7 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, i) => {
+        {STATS.map((stat, i) => {
           const Icon = stat.icon;
           return (
             <motion.div 
